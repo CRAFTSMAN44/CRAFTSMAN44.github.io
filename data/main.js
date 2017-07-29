@@ -1,6 +1,4 @@
 var sketchProc=function(processingInstance){ with (processingInstance){
-
-var sketchProc=function(processingInstance){ with (processingInstance){
 size(window.innerWidth, window.innerHeight);
 frameRate(30);
 {//global variables
@@ -1193,6 +1191,4 @@ draw = function() {
 	updatePAxes();
 	__mousePressed = false;
 };
-}};
-
 }};
