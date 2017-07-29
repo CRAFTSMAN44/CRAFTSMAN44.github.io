@@ -24,7 +24,7 @@ var controllerData, controls, shiftData, textT;
 var scroll1 = 0;
 var mouseIsPressed = false;
 var buttonTimer = 0;
-var buttonHovers = [1, 1];
+var buttonHovers = [1, 1, 1];
 var controlsKeys = [
 "Take screenshot",
 "Pause1",
@@ -318,6 +318,7 @@ var drawUI = function() {
 	buttons[1].drawScrollBar(scroll1, 16);
 	buttons[2].drawRound(1);
 	buttons[4].drawRound();
+	buttons[5].drawRound(2);
 };
 var drawData = function() {
 	pushStyle();
@@ -343,7 +344,7 @@ var drawMods = function() {
 		fill(colors[0]);
 		textAlign(CENTER, CENTER);
 		text(mods[i*2], width/10, height/6+height/40+height/20*i);
-		buttons[i+5].drawCheck(i);
+		buttons[i+6].drawCheck(i);
 	}
 	popStyle();
 };
@@ -386,9 +387,10 @@ var interaction = function() {
 	buttons[1].actionScrollBar(16);
 	buttons[2].actionRound2(1);
 	buttons[3].actionMenu();
+	buttons[5].actionRound3(2);
 	if(modsMenu) {
 		for(var i = 0; i < mods.length/2; i++) {
-			buttons[i+5].actionCheck(i);
+			buttons[i+6].actionCheck(i);
 		}
 	}
 };
@@ -399,6 +401,7 @@ var preparation = function() {
 	buttons.push(new EOCbutton(name, width*3/5, height/20, width/2, height/30));
 	buttons.push(new EOCbutton("", 3*width/10, height/10, width*6/10, height*8/10));
 	buttons.push(new EOCbutton("Joysticks", width/10, height*3/5, width/7, height/30));
+	buttons.push(new EOCbutton("Save", width/2, height*19/20, width/7, height/30));
 	for(var i = 0; i < mods.length/2; i++) {
 		buttons.push(new EOCbutton("X", 3*width/20+width/100, height/6+height/40+height/20*i, width/100, width/100));
 	}
@@ -489,6 +492,23 @@ var edit = function() {
 		keyPressed = function() {};
 	}
 };
+var download = function(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+}
 }
 {//data
 var name = "customkeyboard";
@@ -637,446 +657,444 @@ shiftData = ["","","","","","","","","","","","","","","","","","","","","","","
 defineShiftData();
 var defineTextT = function() {
 textt = [
-";",
-"; (c) 1999-2001 Particle Systems Ltd. All Rights Reserved",
-";",
-"; configs/default.ini",
-";",
-"; Independence War II input bindings for users without joysticks.",
-";",
-"; Revision control information:",
-";",
-"; $Header: /iwar2/configs_release/" + name + ".ini 3     26/04/01 13:50 Steve $",
-";",
-
-"[Properties]",
-"name=" + name,
-
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-"; I-War II developer mode commands",
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-
-"[fcGraphicsDeviceD3D.TakeScreenShot]",
-controllerData[0] + ", " + controls[0] + shiftData[0],
-
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-"; I-War II shell commands",
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-
-"[SpaceFlight.Pause]",
-controllerData[1] + ", " + controls[1] + shiftData[1],
-controllerData[2] + ", " + controls[2] + shiftData[2],
-
-"[SpaceFlight.PDA]",
-controllerData[3] + ", " + controls[3] + shiftData[3],
-
-"[Options.Leave]",
-controllerData[4] + ", " + controls[4] + shiftData[4],
-
-"[GUI.ControlFocusLeft]",
-controllerData[5] + ", " + controls[5] + shiftData[5],
-
-"[GUI.ControlFocusUp]",
-controllerData[6] + ", " + controls[6] + shiftData[6],
-
-"[GUI.ControlFocusRight]",
-controllerData[7] + ", " + controls[7] + shiftData[7],
-
-"[GUI.ControlFocusDown]",
-controllerData[8] + ", " + controls[8] + shiftData[8],
-
-"[GUI.ControlFocusCancel]",
-controllerData[9] + ", " + controls[9] + shiftData[9],
-controllerData[10] + ", " + controls[10] + shiftData[10],
-
-"[GUI.ControlFocusSelect]",
-controllerData[11] + ", " + controls[11] + shiftData[11],
-controllerData[12] + ", " + controls[12] + shiftData[12],
-
-"[GUI.HTMLBack]",
-controllerData[13] + ", " + controls[13] + shiftData[13],
-
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-"; I-War II in-flight commands",
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-
-"; Yoke",
-
-"[icPlayerPilot.Yaw]",
-controllerData[14] + ", " + controls[14] + shiftData[14] + ", inverse",
-controllerData[15] + ", " + controls[15] + shiftData[15],
-
-
-"[icPlayerPilot.Pitch]",
-controllerData[16] + ", " + controls[16] + shiftData[16] + ", inverse",
-controllerData[17] + ", " + controls[17] + shiftData[17],
-
-
-"[icPlayerPilot.Roll]",
-controllerData[18] + ", " + controls[18] + shiftData[18] + ",inverse",
-controllerData[19] + ", " + controls[19] + shiftData[19],
-
-"; Throttle",
-
-"[icPlayerPilot.Throttle]",
-
-"[icPlayerPilot.ThrottleDelta]",
-controllerData[20] + ", " + controls[20] + shiftData[20],
-controllerData[21] + ", " + controls[21] + shiftData[21],
-controllerData[22] + ", " + controls[22] + shiftData[22] + ", inverse",
-controllerData[23] + ", " + controls[23] + shiftData[23] + ", inverse",
-
-";  Thrusters",
-
-"[icPlayerPilot.LateralX]",
-controllerData[24] + ", " + controls[24] + shiftData[24],
-controllerData[25] + ", " + controls[25] + shiftData[25] + ", inverse",
-
-"[icPlayerPilot.LateralY]",
-controllerData[26] + ", " + controls[26] + shiftData[26],
-controllerData[27] + ", " + controls[27] + shiftData[27] + ", inverse",
-
-"[icPlayerPilot.LateralZ]",
-controllerData[28] + ", " + controls[28] + shiftData[28],
-controllerData[29] + ", " + controls[29] + shiftData[29] + ", inverse",
-
-"; Fly-by-wire modes",
-
-"[icPlayerPilot.FreeHold]",
-controllerData[30] + ", " + controls[30] + shiftData[30],
-controllerData[31] + ", " + controls[31] + shiftData[31],
-
-"[icPlayerPilot.FreeToggle]",
-controllerData[32] + ", " + controls[32] + shiftData[32],
-
-"; Fire control",
-
-"[icPlayerPilot.CurrentWeaponFire]",
-controllerData[33] + ", " + controls[33] + shiftData[33],
-
-"[icPlayerPilot.LDSIQuickFire]",
-controllerData[34] + ", " + controls[34] + shiftData[34],
-
-"[icPlayerPilot.ToggleAimAssist]",
-controllerData[35] + ", " + controls[35] + shiftData[35],
-
-"[icPlayerPilot.ToggleZoom]",
-controllerData[36] + ", " + controls[36] + shiftData[36],
-
-"[icPlayerPilot.ToggleWeaponLinkingMode]",
-controllerData[37] + ", " + controls[37] + shiftData[37],
-
-"; LDS drive",
-
-"[icPlayerPilot.ToggleLDS]",
-controllerData[38] + ", " + controls[38] + shiftData[38],
-
-"; Docking",
-
-"[icPlayerPilot.Undock]",
-controllerData[39] + ", " + controls[39] + shiftData[39],
-
-"; Targetting",
-
-"[icPlayerPilot.CycleContactUp]",
-controllerData[40] + ", " + controls[40] + shiftData[40],
-
-"[icPlayerPilot.CycleContactDown]",
-controllerData[41] + ", " + controls[41] + shiftData[41],
-
-"[icPlayerPilot.CycleContactTop]",
-controllerData[42] + ", " + controls[42] + shiftData[42],
-
-"[icPlayerPilot.CycleContactBottom]",
-controllerData[43] + ", " + controls[43] + shiftData[43],
-
-"[icPlayerPilot.TargetNearestEnemy]",
-controllerData[44] + ", " + controls[44] + shiftData[44],
-
-"[icPlayerPilot.TargetNearestShipToDirection]",
-controllerData[45] + ", " + controls[45] + shiftData[45],
-
-"[icPlayerPilot.TargetLastAggressor]",
-controllerData[46] + ", " + controls[46] + shiftData[46],
-
-"[icPlayerPilot.SubTarget]",
-controllerData[47] + ", " + controls[47] + shiftData[47],
-
-"[icPlayerPilot.CycleEnemy]",
-controllerData[48] + ", " + controls[48] + shiftData[48],
-
-"[icPlayerPilot.CycleCritical]",
-controllerData[49] + ", " + controls[49] + shiftData[49],
-
-"; Weapon cycling",
-
-"[icPlayerPilot.NextWeapon]",
-controllerData[50] + ", " + controls[50] + shiftData[50],
-
-"[icPlayerPilot.NextPrimaryWeapon]",
-controllerData[51] + ", " + controls[51] + shiftData[51],
-
-"[icPlayerPilot.NextSecondaryWeapon]",
-controllerData[52] + ", " + controls[52] + shiftData[52],
-
-"; Engineering",
-
-"[icPlayerPilot.PowerToOffensive]",
-controllerData[53] + ", " + controls[53] + shiftData[53],
-
-"[icPlayerPilot.PowerToDefensive]",
-controllerData[54] + ", " + controls[54] + shiftData[54],
-
-"[icPlayerPilot.PowerToDrive]",
-controllerData[55] + ", " + controls[55] + shiftData[55],
-
-"[icPlayerPilot.BalancePower]",
-controllerData[56] + ", " + controls[56] + shiftData[56],
-
-"; Autopilots",
-
-"[icPlayerPilot.AutopilotOff]",
-controllerData[57] + ", " + controls[57] + shiftData[57],
-
-"[icPlayerPilot.AutopilotApproach]",
-controllerData[58] + ", " + controls[58] + shiftData[58],
-
-"[icPlayerPilot.AutopilotFormate]",
-controllerData[59] + ", " + controls[59] + shiftData[59],
-
-"[icPlayerPilot.AutopilotDock]",
-controllerData[60] + ", " + controls[60] + shiftData[60],
-
-"[icPlayerPilot.AutopilotMatchVelocity]",
-controllerData[61] + ", " + controls[61] + shiftData[61],
-
-"[icPlayerPilot.RemotePilot]",
-controllerData[62] + ", " + controls[62] + shiftData[62],
-
-"; Camera selection",
-
-"[icDirector.InternalCamera]",
-controllerData[63] + ", " + controls[63] + shiftData[63],
-
-"[icDirector.TacticalCamera]",
-controllerData[64] + ", " + controls[64] + shiftData[64],
-
-"[icDirector.ExternalCamera]",
-controllerData[65] + ", " + controls[65] + shiftData[65],
-
-"[icDirector.DropCamera]",
-controllerData[66] + ", " + controls[66] + shiftData[66],
-
-"[icDirector.AutoMode]",
-controllerData[67] + ", " + controls[67] + shiftData[67],
-
-"; Camera control",
-
-"[icDirector.Pan]",
-controllerData[68] + ", " + controls[68] + shiftData[68],
-controllerData[69] + ", " + controls[69] + shiftData[69] + ", inverse",
-
-"icDirector.Tilt] ",
-controllerData[70] + ", " + controls[70] + shiftData[70],
-controllerData[71] + ", " + controls[71] + shiftData[71] + ", inverse",
-
-"[icDirector.Roll]",
-controllerData[72] + ", " + controls[72] + shiftData[72],
-controllerData[73] + ", " + controls[73] + shiftData[73] + ", inverse",
-
-"[icDirector.Zoom]",
-controllerData[74] + ", " + controls[74] + shiftData[74] + ", inverse",
-controllerData[75] + ", " + controls[75] + shiftData[75],
-
-"[icDirector.ZoomToFit]",
-controllerData[76] + ", " + controls[76] + shiftData[76],
-controllerData[77] + ", " + controls[77] + shiftData[77],
-
-"[icDirector.MouseDeltaPan]",
-controllerData[78] + ", " + controls[78] + shiftData[78] + ", inverse",
-
-"[icDirector.MouseDeltaTilt]",
-controllerData[79] + ", " + controls[79] + shiftData[79],
-
-"[icDirector.MouseDeltaZoom]",
-controllerData[80] + ", " + controls[80] + shiftData[80] + ", inverse",
-
-"[icDirector.MouseRollModifier]",
-controllerData[81] + ", " + controls[81] + shiftData[81],
-
-"[icDirector.MouseZoomModifier]",
-controllerData[82] + ", " + controls[82] + shiftData[82],
-
-"[icDirector.Skip]",
-controllerData[83] + ", " + controls[83] + shiftData[83],
-
-"; Game controls",
-
-"[Game.PauseSimulation]",
-controllerData[84] + ", " + controls[84] + shiftData[84],
-controllerData[85] + ", " + controls[85] + shiftData[85],
-
-"[Game.MovieSkip]",
-controllerData[86] + ", " + controls[86] + shiftData[86],
-controllerData[87] + ", " + controls[87] + shiftData[87],
-controllerData[88] + ", " + controls[88] + shiftData[88],
-
-"; PDA control",
-
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-"; iWar2 HUD commands",
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-
-"[HUD.MenuLeft]",
-controllerData[89] + ", " + controls[89] + shiftData[89],
-
-"[HUD.MenuRight]",
-controllerData[90] + ", " + controls[90] + shiftData[90],
-
-"[HUD.MenuUp]",
-controllerData[91] + ", " + controls[91] + shiftData[91],
-
-"[HUD.MenuDown]",
-controllerData[92] + ", " + controls[92] + shiftData[92],
-
-"[HUD.MenuSelect]",
-controllerData[93] + ", " + controls[93] + shiftData[93],
-
-"[HUD.MenuCancel]",
-controllerData[94] + ", " + controls[94] + shiftData[94],
-
-"[HUD.Objectives]",
-controllerData[95] + ", " + controls[95] + shiftData[95],
-
-"[HUD.Starmap]",
-controllerData[96] + ", " + controls[96] + shiftData[96],
-
-"[HUD.Log]",
-controllerData[97] + ", " + controls[97] + shiftData[97],
-
-"[HUD.Engineering]",
-controllerData[98] + ", " + controls[98] + shiftData[98],
-
-"[HUD.Statistics]",
-controllerData[99] + ", " + controls[99] + shiftData[99],
-
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-"; iWar2 comms commands",
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-
-"[icComms.PrevResponse]",
-controllerData[100] + ", " + controls[100] + shiftData[100],
-
-"[icComms.NextResponse]",
-controllerData[101] + ", " + controls[101] + shiftData[101],
-
-"[icComms.SayResponse]",
-controllerData[102] + ", " + controls[102] + shiftData[102],
-controllerData[103] + ", " + controls[103] + shiftData[103],
-
-"[icComms.SkipPhrase]",
-controllerData[104] + ", " + controls[104] + shiftData[104],
-
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-"; Generic Flux input commands.",
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-
-"[PointerX]",
-controllerData[105] + ", " + controls[105] + shiftData[105],
-
-"[PointerY]",
-controllerData[106] + ", " + controls[106] + shiftData[106],
-
-"[PointerZ]",
-controllerData[107] + ", " + controls[107] + shiftData[107],
-
-"[PointerButton1]",
-controllerData[108] + ", " + controls[108] + shiftData[108],
-
-"[PointerButton2]",
-controllerData[109] + ", " + controls[109] + shiftData[109],
-
-"[PointerButton3]",
-controllerData[110] + ", " + controls[110] + shiftData[110],
-
-
-"; Script Bindings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-
-"[ScriptKeys.StartJafsScript]",
-controllerData[111] + ", " + controls[111] + shiftData[111],
-
-"; Cutscene accessor",
-
-"[ScriptKeys.SkipCutscene]",
-controllerData[112] + ", " + controls[112] + shiftData[112],
-
-"; Wingmen Commands ",
-
-"[ScriptKeys.WingmenReportStatus]",
-controllerData[113] + ", " + controls[113] + shiftData[113],
-
-"[ScriptKeys.WingmenDefendPlayer]",
-controllerData[114] + ", " + controls[114] + shiftData[114],
-
-"[ScriptKeys.WingmenAttackTarget]",
-controllerData[115] + ", " + controls[115] + shiftData[115],
-
-"[ScriptKeys.WingmenDefendTarget]",
-controllerData[116] + ", " + controls[116] + shiftData[116],
-
-"[ScriptKeys.WingmenDockToTarget]",
-controllerData[117] + ", " + controls[117] + shiftData[117],
-
-"[ScriptKeys.WingmenHalt]",
-controllerData[118] + ", " + controls[118] + shiftData[118],
-
-
-"; T-Fighter Commands",
-
-"[ScriptKeys.TFighterAttachDetach]",
-controllerData[119] + ", " + controls[119] + shiftData[119],
-
-"[ScriptKeys.TFighterCeaseFire]",
-controllerData[120] + ", " + controls[120] + shiftData[120],
-
-"[ScriptKeys.TFighterAttackTarget]",
-controllerData[121] + ", " + controls[121] + shiftData[121],
-
-"[ScriptKeys.TFighterFireAtWill]",
-controllerData[122] + ", " + controls[122] + shiftData[122],
-
-"; Multiplayer Commands",
-
-"[Multiplayer.Score]",
-controllerData[123] + ", " + controls[123] + shiftData[123],
-
-"[ScriptKeys.MultiplayerSay]",
-controllerData[124] + ", " + controls[124] + shiftData[124],
-
-"[ScriptKeys.MultiplayerTeamSay]",
-controllerData[125] + ", " + controls[125] + shiftData[125],
-
-"[ScriptKeys.MultiplayerAutoTaunt1]",
-controllerData[126] + ", " + controls[126] + shiftData[126],
-
-"[ScriptKeys.MultiplayerAutoTaunt2]",
-controllerData[127] + ", " + controls[127] + shiftData[127],
-
-"[ScriptKeys.MultiplayerAutoTaunt3]",
-controllerData[128] + ", " + controls[128] + shiftData[128],
-
-"[ScriptKeys.MultiplayerAutoTaunt4]",
-controllerData[129] + ", " + controls[129] + shiftData[129],
-
-";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-
-"; Cheat keys",
-
-"; :-)",
-
-"; EOF ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
-
-
+";\r\n"+
+"; (c) 1999-2001 Particle Systems Ltd. All Rights Reserved\r\n"+
+";\r\n"+
+"; configs/default.ini\r\n"+
+";\r\n"+
+"; Independence War II input bindings for users without joysticks.\r\n"+
+";\r\n"+
+"; Revision control information:\r\n"+
+";\r\n"+
+"; $Header: /iwar2/configs_release/" + name + ".ini 3     26/04/01 13:50 Steve $\r\n"+
+";\r\n"+
+"\r\n"+
+"[Properties]\r\n"+
+"name=" + name + "\r\n"+
+"\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"; I-War II developer mode commands\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"\r\n"+
+"[fcGraphicsDeviceD3D.TakeScreenShot]\r\n"+
+controllerData[0] + ", " + controls[0] + shiftData[0] + "\r\n"+
+"\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"; I-War II shell commands\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"\r\n"+
+"[SpaceFlight.Pause]\r\n"+
+controllerData[1] + ", " + controls[1] + shiftData[1] + "\r\n"+
+controllerData[2] + ", " + controls[2] + shiftData[2] + "\r\n"+
+"\r\n"+
+"[SpaceFlight.PDA]\r\n"+
+controllerData[3] + ", " + controls[3] + shiftData[3] + "\r\n"+
+"\r\n"+
+"[Options.Leave]\r\n"+
+controllerData[4] + ", " + controls[4] + shiftData[4] + "\r\n"+
+"\r\n"+
+"[GUI.ControlFocusLeft]\r\n"+
+controllerData[5] + ", " + controls[5] + shiftData[5] + "\r\n"+
+"\r\n"+
+"[GUI.ControlFocusUp]\r\n"+
+controllerData[6] + ", " + controls[6] + shiftData[6] + "\r\n"+
+"\r\n"+
+"[GUI.ControlFocusRight]\r\n"+
+controllerData[7] + ", " + controls[7] + shiftData[7] + "\r\n"+
+"\r\n"+
+"[GUI.ControlFocusDown]\r\n"+
+controllerData[8] + ", " + controls[8] + shiftData[8] + "\r\n"+
+"\r\n"+
+"[GUI.ControlFocusCancel]\r\n"+
+controllerData[9] + ", " + controls[9] + shiftData[9] + "\r\n"+
+controllerData[10] + ", " + controls[10] + shiftData[10] + "\r\n"+
+"\r\n"+
+"[GUI.ControlFocusSelect]\r\n"+
+controllerData[11] + ", " + controls[11] + shiftData[11] + "\r\n"+
+controllerData[12] + ", " + controls[12] + shiftData[12] + "\r\n"+
+"\r\n"+
+"[GUI.HTMLBack]\r\n"+
+controllerData[13] + ", " + controls[13] + shiftData[13] + "\r\n"+
+"\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"; I-War II in-flight commands\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"\r\n"+
+"; Yoke\r\n"+
+"\r\n"+
+"[icPlayerPilot.Yaw]\r\n"+
+controllerData[14] + ", " + controls[14] + shiftData[14] + ", inverse\r\n"+
+controllerData[15] + ", " + controls[15] + shiftData[15] + "\r\n"+
+"\r\n"+
+"\r\n"+
+"[icPlayerPilot.Pitch]\r\n"+
+controllerData[16] + ", " + controls[16] + shiftData[16] + ", inverse\r\n"+
+controllerData[17] + ", " + controls[17] + shiftData[17] + "\r\n"+
+"\r\n"+
+"\r\n"+
+"[icPlayerPilot.Roll]\r\n"+
+controllerData[18] + ", " + controls[18] + shiftData[18] + ",inverse\r\n"+
+controllerData[19] + ", " + controls[19] + shiftData[19] + "\r\n"+
+"\r\n"+
+"; Throttle\r\n"+
+"\r\n"+
+"[icPlayerPilot.Throttle]\r\n"+
+"\r\n"+
+"[icPlayerPilot.ThrottleDelta]\r\n"+
+controllerData[20] + ", " + controls[20] + shiftData[20] + "\r\n"+
+controllerData[21] + ", " + controls[21] + shiftData[21] + "\r\n"+
+controllerData[22] + ", " + controls[22] + shiftData[22] + ", inverse\r\n"+
+controllerData[23] + ", " + controls[23] + shiftData[23] + ", inverse\r\n"+
+"\r\n"+
+";  Thrusters\r\n"+
+"\r\n"+
+"[icPlayerPilot.LateralX]\r\n"+
+controllerData[24] + ", " + controls[24] + shiftData[24] + "\r\n"+
+controllerData[25] + ", " + controls[25] + shiftData[25] + ", inverse\r\n"+
+"\r\n"+
+"[icPlayerPilot.LateralY]\r\n"+
+controllerData[26] + ", " + controls[26] + shiftData[26] + "\r\n"+
+controllerData[27] + ", " + controls[27] + shiftData[27] + ", inverse\r\n"+
+"\r\n"+
+"[icPlayerPilot.LateralZ]\r\n"+
+controllerData[28] + ", " + controls[28] + shiftData[28] + "\r\n"+
+controllerData[29] + ", " + controls[29] + shiftData[29] + ", inverse\r\n"+
+"\r\n"+
+"; Fly-by-wire modes\r\n"+
+"\r\n"+
+"[icPlayerPilot.FreeHold]\r\n"+
+controllerData[30] + ", " + controls[30] + shiftData[30] + "\r\n"+
+controllerData[31] + ", " + controls[31] + shiftData[31] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.FreeToggle]\r\n"+
+controllerData[32] + ", " + controls[32] + shiftData[32] + "\r\n"+
+"\r\n"+
+"; Fire control\r\n"+
+"\r\n"+
+"[icPlayerPilot.CurrentWeaponFire]\r\n"+
+controllerData[33] + ", " + controls[33] + shiftData[33] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.LDSIQuickFire]\r\n"+
+controllerData[34] + ", " + controls[34] + shiftData[34] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.ToggleAimAssist]\r\n"+
+controllerData[35] + ", " + controls[35] + shiftData[35] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.ToggleZoom]\r\n"+
+controllerData[36] + ", " + controls[36] + shiftData[36] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.ToggleWeaponLinkingMode]\r\n"+
+controllerData[37] + ", " + controls[37] + shiftData[37] + "\r\n"+
+"\r\n"+
+"; LDS drive\r\n"+
+"\r\n"+
+"[icPlayerPilot.ToggleLDS]\r\n"+
+controllerData[38] + ", " + controls[38] + shiftData[38] + "\r\n"+
+"\r\n"+
+"; Docking\r\n"+
+"\r\n"+
+"[icPlayerPilot.Undock]\r\n"+
+controllerData[39] + ", " + controls[39] + shiftData[39] + "\r\n"+
+"\r\n"+
+"; Targetting\r\n"+
+"\r\n"+
+"[icPlayerPilot.CycleContactUp]\r\n"+
+controllerData[40] + ", " + controls[40] + shiftData[40] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.CycleContactDown]\r\n"+
+controllerData[41] + ", " + controls[41] + shiftData[41] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.CycleContactTop]\r\n"+
+controllerData[42] + ", " + controls[42] + shiftData[42] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.CycleContactBottom]\r\n"+
+controllerData[43] + ", " + controls[43] + shiftData[43] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.TargetNearestEnemy]\r\n"+
+controllerData[44] + ", " + controls[44] + shiftData[44] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.TargetNearestShipToDirection]\r\n"+
+controllerData[45] + ", " + controls[45] + shiftData[45] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.TargetLastAggressor]\r\n"+
+controllerData[46] + ", " + controls[46] + shiftData[46] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.SubTarget]\r\n"+
+controllerData[47] + ", " + controls[47] + shiftData[47] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.CycleEnemy]\r\n"+
+controllerData[48] + ", " + controls[48] + shiftData[48] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.CycleCritical]\r\n"+
+controllerData[49] + ", " + controls[49] + shiftData[49] + "\r\n"+
+"\r\n"+
+"; Weapon cycling\r\n"+
+"\r\n"+
+"[icPlayerPilot.NextWeapon]\r\n"+
+controllerData[50] + ", " + controls[50] + shiftData[50] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.NextPrimaryWeapon]\r\n"+
+controllerData[51] + ", " + controls[51] + shiftData[51] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.NextSecondaryWeapon]\r\n"+
+controllerData[52] + ", " + controls[52] + shiftData[52] + "\r\n"+
+"\r\n"+
+"; Engineering\r\n"+
+"\r\n"+
+"[icPlayerPilot.PowerToOffensive]\r\n"+
+controllerData[53] + ", " + controls[53] + shiftData[53] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.PowerToDefensive]\r\n"+
+controllerData[54] + ", " + controls[54] + shiftData[54] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.PowerToDrive]\r\n"+
+controllerData[55] + ", " + controls[55] + shiftData[55] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.BalancePower]\r\n"+
+controllerData[56] + ", " + controls[56] + shiftData[56] + "\r\n"+
+"\r\n"+
+"; Autopilots\r\n"+
+"\r\n"+
+"[icPlayerPilot.AutopilotOff]\r\n"+
+controllerData[57] + ", " + controls[57] + shiftData[57] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.AutopilotApproach]\r\n"+
+controllerData[58] + ", " + controls[58] + shiftData[58] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.AutopilotFormate]\r\n"+
+controllerData[59] + ", " + controls[59] + shiftData[59] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.AutopilotDock]\r\n"+
+controllerData[60] + ", " + controls[60] + shiftData[60] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.AutopilotMatchVelocity]\r\n"+
+controllerData[61] + ", " + controls[61] + shiftData[61] + "\r\n"+
+"\r\n"+
+"[icPlayerPilot.RemotePilot]\r\n"+
+controllerData[62] + ", " + controls[62] + shiftData[62] + "\r\n"+
+"\r\n"+
+"; Camera selection\r\n"+
+"\r\n"+
+"[icDirector.InternalCamera]\r\n"+
+controllerData[63] + ", " + controls[63] + shiftData[63] + "\r\n"+
+"\r\n"+
+"[icDirector.TacticalCamera]\r\n"+
+controllerData[64] + ", " + controls[64] + shiftData[64] + "\r\n"+
+"\r\n"+
+"[icDirector.ExternalCamera]\r\n"+
+controllerData[65] + ", " + controls[65] + shiftData[65] + "\r\n"+
+"\r\n"+
+"[icDirector.DropCamera]\r\n"+
+controllerData[66] + ", " + controls[66] + shiftData[66] + "\r\n"+
+"\r\n"+
+"[icDirector.AutoMode]\r\n"+
+controllerData[67] + ", " + controls[67] + shiftData[67] + "\r\n"+
+"\r\n"+
+"; Camera control\r\n"+
+"\r\n"+
+"[icDirector.Pan]\r\n"+
+controllerData[68] + ", " + controls[68] + shiftData[68] + "\r\n"+
+controllerData[69] + ", " + controls[69] + shiftData[69] + ", inverse\r\n"+
+"\r\n"+
+"icDirector.Tilt]\r\n"+
+controllerData[70] + ", " + controls[70] + shiftData[70] + "\r\n"+
+controllerData[71] + ", " + controls[71] + shiftData[71] + ", inverse\r\n"+
+"\r\n"+
+"[icDirector.Roll]\r\n"+
+controllerData[72] + ", " + controls[72] + shiftData[72] + "\r\n"+
+controllerData[73] + ", " + controls[73] + shiftData[73] + ", inverse\r\n"+
+"\r\n"+
+"[icDirector.Zoom]\r\n"+
+controllerData[74] + ", " + controls[74] + shiftData[74] + ", inverse\r\n"+
+controllerData[75] + ", " + controls[75] + shiftData[75] + "\r\n"+
+"\r\n"+
+"[icDirector.ZoomToFit]\r\n"+
+controllerData[76] + ", " + controls[76] + shiftData[76] + "\r\n"+
+controllerData[77] + ", " + controls[77] + shiftData[77] + "\r\n"+
+"\r\n"+
+"[icDirector.MouseDeltaPan]\r\n"+
+controllerData[78] + ", " + controls[78] + shiftData[78] + ", inverse\r\n"+
+"\r\n"+
+"[icDirector.MouseDeltaTilt]\r\n"+
+controllerData[79] + ", " + controls[79] + shiftData[79] + "\r\n"+
+"\r\n"+
+"[icDirector.MouseDeltaZoom]\r\n"+
+controllerData[80] + ", " + controls[80] + shiftData[80] + ", inverse\r\n"+
+"\r\n"+
+"[icDirector.MouseRollModifier]\r\n"+
+controllerData[81] + ", " + controls[81] + shiftData[81] + "\r\n"+
+"\r\n"+
+"[icDirector.MouseZoomModifier]\r\n"+
+controllerData[82] + ", " + controls[82] + shiftData[82] + "\r\n"+
+"\r\n"+
+"[icDirector.Skip]\r\n"+
+controllerData[83] + ", " + controls[83] + shiftData[83] + "\r\n"+
+"\r\n"+
+"; Game controls\r\n"+
+"\r\n"+
+"[Game.PauseSimulation]\r\n"+
+controllerData[84] + ", " + controls[84] + shiftData[84] + "\r\n"+
+controllerData[85] + ", " + controls[85] + shiftData[85] + "\r\n"+
+"\r\n"+
+"[Game.MovieSkip]\r\n"+
+controllerData[86] + ", " + controls[86] + shiftData[86] + "\r\n"+
+controllerData[87] + ", " + controls[87] + shiftData[87] + "\r\n"+
+controllerData[88] + ", " + controls[88] + shiftData[88] + "\r\n"+
+"\r\n"+
+"; PDA control\r\n"+
+"\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"; iWar2 HUD commands\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"\r\n"+
+"[HUD.MenuLeft]\r\n"+
+controllerData[89] + ", " + controls[89] + shiftData[89] + "\r\n"+
+"\r\n"+
+"[HUD.MenuRight]\r\n"+
+controllerData[90] + ", " + controls[90] + shiftData[90] + "\r\n"+
+"\r\n"+
+"[HUD.MenuUp]\r\n"+
+controllerData[91] + ", " + controls[91] + shiftData[91] + "\r\n"+
+"\r\n"+
+"[HUD.MenuDown]\r\n"+
+controllerData[92] + ", " + controls[92] + shiftData[92] + "\r\n"+
+"\r\n"+
+"[HUD.MenuSelect]\r\n"+
+controllerData[93] + ", " + controls[93] + shiftData[93] + "\r\n"+
+"\r\n"+
+"[HUD.MenuCancel]\r\n"+
+controllerData[94] + ", " + controls[94] + shiftData[94] + "\r\n"+
+"\r\n"+
+"[HUD.Objectives]\r\n"+
+controllerData[95] + ", " + controls[95] + shiftData[95] + "\r\n"+
+"\r\n"+
+"[HUD.Starmap]\r\n"+
+controllerData[96] + ", " + controls[96] + shiftData[96] + "\r\n"+
+"\r\n"+
+"[HUD.Log]\r\n"+
+controllerData[97] + ", " + controls[97] + shiftData[97] + "\r\n"+
+"\r\n"+
+"[HUD.Engineering]\r\n"+
+controllerData[98] + ", " + controls[98] + shiftData[98] + "\r\n"+
+"\r\n"+
+"[HUD.Statistics]\r\n"+
+controllerData[99] + ", " + controls[99] + shiftData[99] + "\r\n"+
+"\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"; iWar2 comms commands\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"\r\n"+
+"[icComms.PrevResponse]\r\n"+
+controllerData[100] + ", " + controls[100] + shiftData[100] + "\r\n"+
+"\r\n"+
+"[icComms.NextResponse]\r\n"+
+controllerData[101] + ", " + controls[101] + shiftData[101] + "\r\n"+
+"\r\n"+
+"[icComms.SayResponse]\r\n"+
+controllerData[102] + ", " + controls[102] + shiftData[102] + "\r\n"+
+controllerData[103] + ", " + controls[103] + shiftData[103] + "\r\n"+
+"\r\n"+
+"[icComms.SkipPhrase]\r\n"+
+controllerData[104] + ", " + controls[104] + shiftData[104] + "\r\n"+
+"\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"; Generic Flux input commands.\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"\r\n"+
+"[PointerX]\r\n"+
+controllerData[105] + ", " + controls[105] + shiftData[105] + "\r\n"+
+"\r\n"+
+"[PointerY]\r\n"+
+controllerData[106] + ", " + controls[106] + shiftData[106] + "\r\n"+
+"\r\n"+
+"[PointerZ]\r\n"+
+controllerData[107] + ", " + controls[107] + shiftData[107] + "\r\n"+
+"\r\n"+
+"[PointerButton1]\r\n"+
+controllerData[108] + ", " + controls[108] + shiftData[108] + "\r\n"+
+"\r\n"+
+"[PointerButton2]\r\n"+
+controllerData[109] + ", " + controls[109] + shiftData[109] + "\r\n"+
+"\r\n"+
+"[PointerButton3]\r\n"+
+controllerData[110] + ", " + controls[110] + shiftData[110] + "\r\n"+
+"\r\n"+
+"\r\n"+
+"; Script Bindings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"\r\n"+
+"[ScriptKeys.StartJafsScript]\r\n "+
+controllerData[111] + ", " + controls[111] + shiftData[111] + "\r\n"+
+"\r\n"+
+"; Cutscene accessor\r\n"+
+"\r\n"+
+"[ScriptKeys.SkipCutscene]\r\n"+
+controllerData[112] + ", " + controls[112] + shiftData[112] + "\r\n"+
+"\r\n"+
+"; Wingmen Commands\r\n"+
+"\r\n"+
+"[ScriptKeys.WingmenReportStatus]\r\n"+
+controllerData[113] + ", " + controls[113] + shiftData[113] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.WingmenDefendPlayer]\r\n"+
+controllerData[114] + ", " + controls[114] + shiftData[114] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.WingmenAttackTarget]\r\n"+
+controllerData[115] + ", " + controls[115] + shiftData[115] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.WingmenDefendTarget]\r\n"+
+controllerData[116] + ", " + controls[116] + shiftData[116] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.WingmenDockToTarget]\r\n"+
+controllerData[117] + ", " + controls[117] + shiftData[117] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.WingmenHalt]\r\n"+
+controllerData[118] + ", " + controls[118] + shiftData[118] + "\r\n"+
+"\r\n"+
+"\r\n"+
+"; T-Fighter Commands\r\n"+
+"\r\n"+
+"[ScriptKeys.TFighterAttachDetach]\r\n"+
+controllerData[119] + ", " + controls[119] + shiftData[119] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.TFighterCeaseFire]\r\n"+
+controllerData[120] + ", " + controls[120] + shiftData[120] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.TFighterAttackTarget]\r\n"+
+controllerData[121] + ", " + controls[121] + shiftData[121] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.TFighterFireAtWill]\r\n"+
+controllerData[122] + ", " + controls[122] + shiftData[122] + "\r\n"+
+"\r\n"+
+"; Multiplayer Commands\r\n"+
+"\r\n"+
+"[Multiplayer.Score]\r\n"+
+controllerData[123] + ", " + controls[123] + shiftData[123] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.MultiplayerSay]\r\n"+
+controllerData[124] + ", " + controls[124] + shiftData[124] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.MultiplayerTeamSay]\r\n"+
+controllerData[125] + ", " + controls[125] + shiftData[125] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.MultiplayerAutoTaunt1]\r\n"+
+controllerData[126] + ", " + controls[126] + shiftData[126] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.MultiplayerAutoTaunt2]\r\n"+
+controllerData[127] + ", " + controls[127] + shiftData[127] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.MultiplayerAutoTaunt3]\r\n"+
+controllerData[128] + ", " + controls[128] + shiftData[128] + "\r\n"+
+"\r\n"+
+"[ScriptKeys.MultiplayerAutoTaunt4]\r\n"+
+controllerData[129] + ", " + controls[129] + shiftData[129] + "\r\n"+
+"\r\n"+
+";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"+
+"\r\n"+
+"; Cheat keys\r\n"+
+"\r\n"+
+"; :-)\r\n"+
+"\r\n"+
+"; EOF ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\r\n"
 ];
 };
 defineTextT();
@@ -1144,6 +1162,20 @@ EOCbutton.prototype.actionRound2 = function(i) {
 		buttonHovers[i] = 1;
 	}
 };
+EOCbutton.prototype.actionRound3 = function(i) {
+	if(mouseX >= this.x-this.w/2 && mouseX <= this.x+this.w/2 && mouseY >= this.y-this.h/2 && mouseY <= this.y+this.h/2) {
+		if(__mousePressed) {
+			defineControllerData();
+			defineControls();
+			defineShiftData();
+			defineTextT();
+			download(textt, name+".ini");
+		}
+		buttonHovers[i] = 2;
+	}else {
+		buttonHovers[i] = 1;
+	}
+}
 EOCbutton.prototype.actionCheck = function(i) {
 	if(mouseX >= this.x-this.w/2 && mouseX <= this.x+this.w/2 && mouseY >= this.y-this.h/2 && mouseY <= this.y+this.h/2) {
 		if(__mousePressed) {
