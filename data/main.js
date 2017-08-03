@@ -5,6 +5,7 @@ frameRate(30);
 var colors = [
 	color(107, 98, 2)
 ];
+var mode = "menu";
 var nameActive = false;
 var controlsActive = false;
 var controlActive = 0;
@@ -24,7 +25,7 @@ var controllerData, controls, shiftData, textT;
 var scroll1 = 0;
 var mouseIsPressed = false;
 var buttonTimer = 0;
-var buttonHovers = [1, 1, 1];
+var buttonHovers = [1, 1, 1, 1, 1];
 var controlsKeys = [
 "Take screenshot",
 "Pause1",
@@ -319,6 +320,30 @@ var drawUI = function() {
 	buttons[2].drawRound(1);
 	buttons[4].drawRound();
 	buttons[5].drawRound(2);
+	buttons[6].drawRound(3);
+	pushStyle();
+};
+var drawProfile = function() {
+	background(0);
+	pushStyle();
+	fill(colors[0], 15);
+	noStroke();
+	rect(0, 0, width/5, height);
+	stroke(colors[0]);
+	line(width/5, 0, width/5, height);
+	fill(colors[0]);
+	stroke(colors[0], 30);
+	for(var z = 0; z < width; z+= 20) {
+		line(z, 0, z, height);
+	}
+	for(var z = 0; z < height; z+= 20) {
+		line(0, z, width, z);
+	}
+	stroke(colors[0]);
+	drawGPsProfile();
+	buttons[7].drawRound(4);
+	buttons[7].actionRound5(4);
+	popStyle();
 };
 var drawData = function() {
 	pushStyle();
@@ -344,7 +369,7 @@ var drawMods = function() {
 		fill(colors[0]);
 		textAlign(CENTER, CENTER);
 		text(mods[i*2], width/10, height/6+height/40+height/20*i);
-		buttons[i+6].drawCheck(i);
+		buttons[i+8].drawCheck(i);
 	}
 	popStyle();
 };
@@ -382,15 +407,36 @@ var drawGPs = function() {
 	}
 	popStyle();
 };
+var drawGPsProfile = function() {
+	pushStyle();
+	textAlign(CENTER, CENTER);
+	if(gps.length > 0) {
+		for(var i = 0; i < gps.length; i++) {
+			text(gps[i].id, width*3*i/10+width*3/10, height/20);
+			for(var j = 0; j < gps[i].buttons.length; j++) {
+				if(gps[i].buttons[j].pressed) {
+					var h = "pressed";
+				}else {
+					var h = "";
+				}
+				text("Button" + j + ": " + h, width*3*i/10+width*3/10, height/10+j*height/20);
+			}
+		}
+	}else {
+		text("No Joystick Connected", width*3/10, height/20);
+	}
+	popStyle();
+};
 var interaction = function() {
 	buttons[0].actionRound(0);
 	buttons[1].actionScrollBar(16);
 	buttons[2].actionRound2(1);
 	buttons[3].actionMenu();
 	buttons[5].actionRound3(2);
+	buttons[6].actionRound4(3);
 	if(modsMenu) {
 		for(var i = 0; i < mods.length/2; i++) {
-			buttons[i+6].actionCheck(i);
+			buttons[i+8].actionCheck(i);
 		}
 	}
 };
@@ -402,6 +448,8 @@ var preparation = function() {
 	buttons.push(new EOCbutton("", 3*width/10, height/10, width*6/10, height*8/10));
 	buttons.push(new EOCbutton("Joysticks", width/10, height*3/5, width/7, height/30));
 	buttons.push(new EOCbutton("Save", width/2, height*19/20, width/7, height/30));
+	buttons.push(new EOCbutton("Profiles", width/10, height*19/20, width/7, height/30));
+	buttons.push(new EOCbutton("Back", width/10, height*19/20, width/7, height/30));
 	for(var i = 0; i < mods.length/2; i++) {
 		buttons.push(new EOCbutton("X", 3*width/20+width/100, height/6+height/40+height/20*i, width/100, width/100));
 	}
@@ -1176,6 +1224,26 @@ EOCbutton.prototype.actionRound3 = function(i) {
 		buttonHovers[i] = 1;
 	}
 }
+EOCbutton.prototype.actionRound4 = function(i) {
+	if(mouseX >= this.x-this.w/2 && mouseX <= this.x+this.w/2 && mouseY >= this.y-this.h/2 && mouseY <= this.y+this.h/2) {
+		if(__mousePressed) {
+			mode = "profiling";
+		}
+		buttonHovers[i] = 2;
+	}else {
+		buttonHovers[i] = 1;
+	}
+};
+EOCbutton.prototype.actionRound5 = function(i) {
+	if(mouseX >= this.x-this.w/2 && mouseX <= this.x+this.w/2 && mouseY >= this.y-this.h/2 && mouseY <= this.y+this.h/2) {
+		if(__mousePressed) {
+			mode = "menu";
+		}
+		buttonHovers[i] = 2;
+	}else {
+		buttonHovers[i] = 1;
+	}
+};
 EOCbutton.prototype.actionCheck = function(i) {
 	if(mouseX >= this.x-this.w/2 && mouseX <= this.x+this.w/2 && mouseY >= this.y-this.h/2 && mouseY <= this.y+this.h/2) {
 		if(__mousePressed) {
@@ -1211,15 +1279,19 @@ draw = function() {
 	environment();
 	mouseFunction();
 	preparation();
-	drawUI();
-	if(modsMenu) {
-		drawMods();
+	if(mode === "menu") {
+		drawUI();
+		if(modsMenu) {
+			drawMods();
+		}
+		interaction();
+		drawData();
+		drawGPs();
+		edit();
+	}else {
+		drawProfile();
 	}
-	interaction();
-	drawData();
 	detectGPs();
-	drawGPs();
-	edit();
 	updatePAxes();
 	__mousePressed = false;
 };
