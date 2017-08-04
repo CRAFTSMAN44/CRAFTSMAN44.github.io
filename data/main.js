@@ -409,21 +409,24 @@ var drawGPs = function() {
 };
 var drawGPsProfile = function() {
 	pushStyle();
-	textAlign(CENTER, CENTER);
+	textAlign(LEFT, CENTER);
 	if(gps.length > 0) {
 		for(var i = 0; i < gps.length; i++) {
-			text(gps[i].id, width*3*i/10+width*3/10, height/20);
+			text(gps[i].id, width*3*i/10+width*1/5, height/20);
 			for(var j = 0; j < gps[i].buttons.length; j++) {
 				if(gps[i].buttons[j].pressed) {
 					var h = "pressed";
 				}else {
 					var h = "";
 				}
-				text("Button" + j + ": " + h, width*3*i/10+width*3/10, height/10+j*height/20);
+				text("Button " + (j+1) + ": " + h, width*3*i/10+width*1/5, height/10+j*height/20);
+			}
+			for(var j = 0; j < gps[i].axes.length; j++) {
+				text("Axis " + (j+1) + ": " + gps[i].axes[j], width*3*i/10+width*1/5, height/10+j*height/20+gps[i].buttons.length*height/20);
 			}
 		}
 	}else {
-		text("No Joystick Connected", width*3/10, height/20);
+		text("No Joystick Connected", width*1/5, height/20);
 	}
 	popStyle();
 };
@@ -1213,9 +1216,6 @@ EOCbutton.prototype.actionRound2 = function(i) {
 EOCbutton.prototype.actionRound3 = function(i) {
 	if(mouseX >= this.x-this.w/2 && mouseX <= this.x+this.w/2 && mouseY >= this.y-this.h/2 && mouseY <= this.y+this.h/2) {
 		if(__mousePressed) {
-			defineControllerData();
-			defineControls();
-			defineShiftData();
 			defineTextT();
 			download(textt, name+".ini");
 		}
@@ -1287,12 +1287,13 @@ draw = function() {
 		interaction();
 		drawData();
 		drawGPs();
+		detectGPs();
 		edit();
+		updatePAxes();
 	}else {
+		detectGPs();
 		drawProfile();
 	}
-	detectGPs();
-	updatePAxes();
 	__mousePressed = false;
 };
 }};
