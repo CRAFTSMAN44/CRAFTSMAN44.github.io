@@ -412,17 +412,17 @@ var drawGPsProfile = function() {
 	textAlign(LEFT, CENTER);
 	if(gps.length > 0) {
 		for(var i = 0; i < gps.length; i++) {
-			text(gps[i].id, width*3*i/10+width*1/5, height/20);
+			text(gps[i].id, width*2*i/10+width*1/5, height/20);
 			for(var j = 0; j < gps[i].buttons.length; j++) {
 				if(gps[i].buttons[j].pressed) {
 					var h = "pressed";
 				}else {
 					var h = "";
 				}
-				text("Button " + (j+1) + ": " + h, width*3*i/10+width*1/5, height/10+j*height/20);
+				text("Button " + (j+1) + ": " + h, width*2*i/10+width*1/5, height/10+j*height/20);
 			}
 			for(var j = 0; j < gps[i].axes.length; j++) {
-				text("Axis " + (j+1) + ": " + gps[i].axes[j], width*3*i/10+width*1/5, height/10+j*height/20+gps[i].buttons.length*height/20);
+				text("Axis " + (j+1) + ": " + gps[i].axes[j], width*2*i/10+width*1/5, height/10+j*height/20+gps[i].buttons.length*height/20);
 			}
 		}
 	}else {
